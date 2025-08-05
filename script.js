@@ -1,10 +1,23 @@
+// Get modal elements
+const modal = document.getElementById('contactModal');
+const contactMenuLink = document.getElementById('contactMenuLink');
+const closeBtn = document.querySelector('.close');
+const contactForm = document.getElementById('contactForm');
+
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     });
 });
 
@@ -93,15 +106,14 @@ function hideModal() {
     document.body.style.overflow = 'auto';
 }
 
-// Open modal when clicking contact button
-if (contactBtn) {
-    contactBtn.addEventListener('click', function(e) {
+// Open modal when clicking the 'Contacto' menu link
+if (contactMenuLink) {
+    contactMenuLink.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('Contact button clicked');
+        e.stopPropagation();
         showModal();
-    });
-} else {
-    console.error('Contact button not found');
+        return false;
+    }, false);
 }
 
 // Debug: Log modal state changes
@@ -112,68 +124,64 @@ if (modal) {
 }
 
 // Close modal when clicking the X
-closeBtn.addEventListener('click', function() {
-    hideModal();
-});
+if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        hideModal();
+    });
+}
 
 // Close modal when clicking outside the modal content
-modal.addEventListener('click', function(event) {
-    if (event.target === modal) {
-        hideModal();
-    }
-});
+if (modal) {
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            hideModal();
+        }
+    });
+}
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.classList.contains('show')) {
+    if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
         hideModal();
     }
 });
 
 // Handle form submission
-contactForm.onsubmit = async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(contactForm);
-    const data = {
-        subject: formData.get('subject'),
-        email: formData.get('email'),
-        phone: formData.get('phone') || 'No proporcionado',
-        message: formData.get('message')
-    };
-
-    // Show loading state
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando...';
-
-    try {
-        // Using FormSubmit.co for form submission
-        const response = await fetch('https://formsubmit.co/ajax/asordo@gmail.com', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
+if (contactForm) {
+    contactForm.onsubmit = async function(e) {
+        e.preventDefault();
         
-        if (response.ok) {
-            alert('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.');
-            contactForm.reset();
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        } else {
-            throw new Error(result.message || 'Error al enviar el mensaje');
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        
+        try {
+            const formData = new FormData(this);
+            const response = await fetch('https://formsubmit.co/ajax/asordo@gmail.com', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success message
+                alert('¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.');
+                this.reset();
+                hideModal();
+            } else {
+                throw new Error(result.message || 'Error al enviar el mensaje');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.');
+        } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
-    }
-};
+    };
+}
