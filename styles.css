@@ -304,9 +304,9 @@ footer {
 /* Responsive Design */
 @media (max-width: 768px) {
     nav {
-        padding: 0.3rem 2% 0.3rem 2%;
+        padding: 0.9rem 2% 0.9rem 2%; /* más alto */
         gap: 0.5rem;
-        min-height: 44px;
+        min-height: 64px; /* más alto */
     }
     .logo span {
         font-size: 1.1rem;
@@ -324,6 +324,9 @@ footer {
         margin: 0;
         padding: 0;
         box-shadow: none;
+    }
+    main {
+        padding-top: 84px !important; /* deja espacio suficiente bajo el header en móvil */
     }
     .hero {
         min-height: calc(100vh - 44px);
