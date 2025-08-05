@@ -303,6 +303,31 @@ footer {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    nav {
+        padding: 0.7rem 4%;
+        gap: 1rem;
+    }
+    .logo span {
+        font-size: 1.2rem;
+    }
+    .nav-links {
+        gap: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .nav-links a {
+        font-size: 1rem;
+    }
+    header {
+        min-height: unset;
+        height: auto;
+    }
+    .hero {
+        min-height: calc(100vh - 60px);
+        height: auto;
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+    }
+
     .target-grid,
     .services-grid {
         grid-template-columns: 1fr;
